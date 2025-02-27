@@ -6,7 +6,7 @@ import math
 import random
 
 global  balls, w_width, w_height, ball_size, ball_speed, pause, blink, boundary_x, boundary_y
-w_width, w_height = 1200, 675
+w_width, w_height = 1200, 675   # 16:9
 boundary_x = w_width // 2
 boundary_y = w_height // 2
 balls = []
@@ -63,7 +63,7 @@ def convert_coordinate(x, y):
     return a, b
 
 def keyboard_listener(key, x, y):
-    global ball_size, pause
+    global ball_size, pause, blink
     if key == b'w':
         ball_size += 1
         print("Size Increased")
@@ -73,6 +73,7 @@ def keyboard_listener(key, x, y):
     elif key == b' ':
         pause = not pause
         if pause:
+            blink = False
             print("Paused")
         else:
             print("Resumed")
@@ -92,7 +93,7 @@ def mouse_listener(button, state, x, y):
     
     # State means if the button is pressed or released
     
-    global balls, blink
+    global balls, blink, pause
     
     if button == GLUT_RIGHT_BUTTON and state == GLUT_DOWN:
         print(x, y)
@@ -102,10 +103,11 @@ def mouse_listener(button, state, x, y):
         balls.append(new_ball)
     
     if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
-        blink = not blink
-        if blink:
-            blinking()
-            # glutTimerFunc(100, lambda _: blinking(), 0)
+        if not pause:
+            blink = not blink
+            if blink:
+                blinking()
+                # glutTimerFunc(100, lambda _: blinking(), 0)
     
     glutPostRedisplay()
     
