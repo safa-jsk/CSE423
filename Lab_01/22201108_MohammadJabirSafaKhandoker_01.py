@@ -433,7 +433,7 @@ glutMainLoop()
 #         print("Blinking")
 #         for i in balls:
 #             i.visible = not i.visible
-#         glutTimerFunc(100, lambda _: blinking(), 0)
+#         glutTimerFunc(500, lambda _: blinking(), 0)
 #     glutPostRedisplay()
 
 # def init():
