@@ -65,11 +65,16 @@ def convert_coordinate(x, y):
 def keyboard_listener(key, x, y):
     global ball_size, pause, blink
     if key == b'w':
-        ball_size += 1
-        print("Size Increased")
+        if not pause:
+            ball_size += 1
+            print("Size Increased")
     elif key == b's':
-        ball_size -= 1
-        print("Size Decreased")
+        if not pause:
+            if ball_size > 1:
+                ball_size -= 1
+                print("Size Decreased")
+            else:
+                print("Minimum Size Reached")
     elif key == b' ':
         pause = not pause
         if pause:
@@ -80,13 +85,15 @@ def keyboard_listener(key, x, y):
     glutPostRedisplay()
 
 def special_keyboard_listener(key, x, y):
-    global ball_speed
+    global ball_speed, pause
     if key == GLUT_KEY_UP:
-        ball_speed *= 2
-        print("Speed Increased")
+        if not pause:
+            ball_speed *= 2
+            print("Speed Increased")
     elif key == GLUT_KEY_DOWN:
-        ball_speed /= 2
-        print("Speed Decreased")
+        if not pause:
+            ball_speed /= 2
+            print("Speed Decreased")
     glutPostRedisplay()
 
 def mouse_listener(button, state, x, y):
@@ -96,11 +103,12 @@ def mouse_listener(button, state, x, y):
     global balls, blink, pause
     
     if button == GLUT_RIGHT_BUTTON and state == GLUT_DOWN:
-        print(x, y)
-        x, y = convert_coordinate(x, y)
-        print(x, y)
-        new_ball = Ball(x, y)
-        balls.append(new_ball)
+        if not pause:
+            print(x, y)
+            x, y = convert_coordinate(x, y)
+            print(x, y)
+            new_ball = Ball(x, y)
+            balls.append(new_ball)
     
     if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
         if not pause:
@@ -138,7 +146,7 @@ def blinking():
         print("Blinking")
         for i in balls:
             i.visible = not i.visible
-        glutTimerFunc(100, lambda _: blinking(), 0)
+        glutTimerFunc(500, lambda _: blinking(), 0)
     glutPostRedisplay()
 
 def init():
