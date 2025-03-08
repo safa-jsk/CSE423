@@ -3,6 +3,7 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 
 import random
+import time
 
 w_width, w_height = 500, 700
 top, bottom = w_height // 2, -w_height // 2
@@ -20,6 +21,8 @@ REFRESH_RATE = 16
 diamonds = []
 score = 0
 
+t0 = time.time()
+
 class Box:
     def __init__(self, x, y, width, height):
         self.x = x
@@ -28,7 +31,7 @@ class Box:
         self.height = height
     
 class Diamond:
-    global line_width
+    global line_width, delta_time
     def __init__(self):
         self.x = random.randint(left + 10, right - 10)
         self.y = top - 100
@@ -46,7 +49,7 @@ class Diamond:
 
     def move(self):
         if not pause:
-            self.y -= diamond_speed
+            self.y -= diamond_speed * delta_time
 
 def find_zone(x1, y1, x2, y2):
     dx = x2 - x1
@@ -139,8 +142,13 @@ def collision_detection(catcher, diamond):
             catcher.y + catcher.height > diamond.y)
 
 def play_game():
-    global over, diamond_speed, score, catcher_speed, catcher_box
+    global over, diamond_speed, score, catcher_speed, catcher_box, t0, delta_time
+    
     if not pause:
+        current_time = time.time()
+        delta_time = current_time - t0
+        t0 = time.time()
+        
         for diamond in diamonds:
             diamond_box = Box(diamond.x - 10, diamond.y - 20, 20, 20)
             diamond.move()
