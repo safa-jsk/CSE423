@@ -12,10 +12,10 @@ restart = False
 pause = False
 over = False
 
-line_width = 3
-catcher_speed = 10
-diamond_speed = 10
-REFRESH_RATE = 50
+line_width = 2
+catcher_speed = 5
+diamond_speed = 2
+REFRESH_RATE = 16
 
 diamonds = []
 score = 0
@@ -139,7 +139,7 @@ def collision_detection(catcher, diamond):
             catcher.y + catcher.height > diamond.y)
 
 def play_game():
-    global over, diamond_speed, score, catcher_speed
+    global over, diamond_speed, score, catcher_speed, catcher_box
     if not pause:
         for diamond in diamonds:
             diamond_box = Box(diamond.x - 10, diamond.y - 20, 20, 20)
@@ -151,9 +151,13 @@ def play_game():
                 score += 1
                 print("Score:", score)
                 
+                if score % 3 == 0:
+                    catcher_speed += 10
+                    diamond_speed += 2
+                
                 if score % 5 == 0:
-                    catcher_speed += 5
-                    diamond_speed += 5
+                    catcher_box.x -= 25
+                    catcher_box.width += 25
                 
             if diamond.y < bottom:
                 diamonds.remove(diamond)
@@ -181,7 +185,7 @@ def restart_button():
     glEnd()
 
 def restart_game():
-    global diamonds, restart, over, score, pause, diamond_speed, catcher_speed
+    global diamonds, restart, over, score, pause, diamond_speed, catcher_speed, catcher_box
     
     if restart:
         diamonds.clear()
@@ -189,8 +193,10 @@ def restart_game():
         over = False
         pause = False
         restart = False
-        diamond_speed = 10
-        catcher_speed = 10
+        catcher_speed = 5
+        diamond_speed = 2
+        catcher_box.x = -75
+        catcher_box.width = 150
         score = 0
 
 def pause_button():
@@ -205,6 +211,22 @@ def pause_button():
 
     draw_line(left_point, pause_box.y, left_point, pause_box.y - pause_box.height)
     draw_line(right_point, pause_box.y, right_point, pause_box.y - pause_box.height)
+
+    glEnd()
+
+def resume_button():
+    global top, bottom, left, right, line_width, pause_box
+    
+    left_point = pause_box.x - pause_box.width//4
+    mid_point = pause_box.x + pause_box.width//2
+
+    glColor3f(242/255, 173/255, 12/255)
+    glPointSize(line_width)
+    glBegin(GL_POINTS)
+
+    draw_line(left_point, pause_box.y, left_point, pause_box.y - pause_box.height)
+    draw_line(left_point, pause_box.y, mid_point, pause_box.y - pause_box.height//2)
+    draw_line(left_point, pause_box.y - pause_box.height, mid_point, pause_box.y - pause_box.height//2)
 
     glEnd()
 
@@ -228,18 +250,18 @@ def mouse_listener(button, state, x, y):
     if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
         if restart_box.x <= x <= restart_box.x + restart_box.width and restart_box.y - restart_box.height//2 <= y <= restart_box.y + restart_box.height//2:
             restart = True
-            print("Starting Over")
-    if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
-        if pause_box.x - pause_box.width//2 <= x <= pause_box.x + pause_box.width//2 and pause_box.y - pause_box.height <= y <= pause_box.y:
+            print("Starting Over!")
+   
+        elif pause_box.x - pause_box.width//2 <= x <= pause_box.x + pause_box.width//2 and pause_box.y - pause_box.height <= y <= pause_box.y:
             pause = not pause
             if pause:
-                print("Pausing")
+                print("Pausing!")
             else:
-                print("Resuming")
-    if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
-        if exit_box.x - exit_box.width <= x <= exit_box.x and exit_box.y - exit_box.height <= y <= exit_box.y:
+                print("Resuming!")
+    
+        elif exit_box.x - exit_box.width <= x <= exit_box.x and exit_box.y - exit_box.height <= y <= exit_box.y:
             glutLeaveMainLoop()
-            print("Goodbye")
+            print("Goodbye!")
         
     glutPostRedisplay()
 
@@ -259,7 +281,10 @@ def display():
     glLoadIdentity()
     catcher()
     restart_button()
-    pause_button()
+    if not pause:
+        pause_button()
+    else:
+        resume_button()
     exit_button()
     for diamond in diamonds:
         diamond.draw()
@@ -280,6 +305,7 @@ diamonds.append(Diamond())
 
 restart_box = Box(left + 10, top - 50, 50, 50)
 pause_box = Box(0, top - 25, 40, 50)
+resume_box = Box(0, top - 25, 40, 50)
 exit_box = Box(right - 10, top - 25, 50, 50)
 catcher_box = Box(-75, bottom + 10, 150, 20)
 
