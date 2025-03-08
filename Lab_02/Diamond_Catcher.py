@@ -4,7 +4,6 @@ from OpenGL.GLU import *
 
 import random
 
-global w_width, w_height, top, bottom, left, right, line_width, catcher_box, catcher_speed, restart_box, restart, pause_box, pause, exit_box, over, diamonds, diamond_speed, score, refresh_rate
 w_width, w_height = 500, 700
 top, bottom = w_height // 2, -w_height // 2
 left, right = -w_width // 2, w_width // 2
@@ -16,13 +15,12 @@ over = False
 line_width = 3
 catcher_speed = 10
 diamond_speed = 10
-refresh_rate = 50
+REFRESH_RATE = 50
 
 diamonds = []
 score = 0
 
 class Box:
-    global top, bottom, left, right, line_width
     def __init__(self, x, y, width, height):
         self.x = x
         self.y = y
@@ -30,7 +28,7 @@ class Box:
         self.height = height
     
 class Diamond:
-    global top, bottom, left, right, line_width, pause, diamond_speed
+    global line_width
     def __init__(self):
         self.x = random.randint(left + 10, right - 10)
         self.y = top - 100
@@ -112,7 +110,7 @@ def draw_line(x1, y1, x2, y2):
             y += 1
 
 def catcher():
-    global top, bottom, left, right, line_width, catcher_box
+    global line_width
 
     top_left = catcher_box.x
     top_right = catcher_box.x + catcher_box.width
@@ -141,7 +139,7 @@ def collision_detection(catcher, diamond):
             catcher.y + catcher.height > diamond.y)
 
 def play_game():
-    global top, bottom, left, right, over, diamonds, diamond_speed, score, pause, catcher_speed
+    global over, diamond_speed, score, catcher_speed
     if not pause:
         for diamond in diamonds:
             diamond_box = Box(diamond.x - 10, diamond.y - 20, 20, 20)
@@ -165,10 +163,9 @@ def play_game():
     glutPostRedisplay()
 
 def animate_diamonds(value):
-    global refresh_rate
     play_game()
     glutPostRedisplay()
-    glutTimerFunc(refresh_rate, animate_diamonds, 0)   
+    glutTimerFunc(REFRESH_RATE, animate_diamonds, 0)   
 
 def restart_button():
     global top, bottom, left, right, line_width, restart_box
@@ -184,7 +181,7 @@ def restart_button():
     glEnd()
 
 def restart_game():
-    global diamonds, restart, over, score, pause
+    global diamonds, restart, over, score, pause, diamond_speed, catcher_speed
     
     if restart:
         diamonds.clear()
@@ -192,6 +189,8 @@ def restart_game():
         over = False
         pause = False
         restart = False
+        diamond_speed = 10
+        catcher_speed = 10
         score = 0
 
 def pause_button():
@@ -222,7 +221,7 @@ def exit_button():
     glEnd()
 
 def mouse_listener(button, state, x, y):
-    global top, bottom, left, right, restart, restart_box, pause, pause_box, exit_box, diamond_speed
+    global pause, over, restart
 
     x, y = x - right, top - y
 
@@ -294,5 +293,5 @@ init()
 glutSpecialFunc(special_key_listener)
 glutMouseFunc(mouse_listener)
 glutDisplayFunc(display)
-glutTimerFunc(refresh_rate, animate_diamonds, 0)
+glutTimerFunc(REFRESH_RATE, animate_diamonds, 0)
 glutMainLoop()
