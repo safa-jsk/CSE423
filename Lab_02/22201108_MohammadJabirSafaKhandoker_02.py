@@ -15,8 +15,8 @@ over = False
 
 line_width = 2
 catcher_speed = 5
-diamond_speed = 2
-REFRESH_RATE = 16
+diamond_speed = 100
+REFRESH_RATE = 32
 
 diamonds = []
 score = 0
@@ -102,7 +102,7 @@ def draw_line(x1, y1, x2, y2):
 
     while x <= x2_0:
         og_x, og_y = convert_zone_from_zero(zone, x, y)
-        glVertex2i(og_x, og_y)
+        glVertex2i(int(og_x), int(og_y))
 
         if d <= 0:
             d += dE
