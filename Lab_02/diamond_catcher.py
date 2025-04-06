@@ -161,7 +161,7 @@ def play_game():
                 
                 if score % 3 == 0:
                     catcher_speed += 10
-                    diamond_speed += 2
+                    diamond_speed += 50
                 
                 if score % 5 == 0:
                     catcher_box.x -= 25
@@ -202,7 +202,7 @@ def restart_game():
         pause = False
         restart = False
         catcher_speed = 5
-        diamond_speed = 2
+        diamond_speed = 100
         catcher_box.x = -75
         catcher_box.width = 150
         score = 0
